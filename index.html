@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Phantøm Phøne — Burner Numbers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0b0b0b;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 1.5rem;
+        }
+
+        .card {
+            max-width: 440px;
+            width: 100%;
+            background: #141414;
+            padding: 2rem 1.8rem 2.2rem;
+            border-radius: 1.8rem;
+            border: 1px solid #00FF66;
+            box-shadow: 0 0 30px rgba(0, 255, 102, 0.08), inset 0 0 30px rgba(0, 255, 102, 0.02);
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 0 45px rgba(0, 255, 102, 0.12), inset 0 0 30px rgba(0, 255, 102, 0.03);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #00FF66;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .logo span {
+            background: #00FF66;
+            color: #0b0b0b;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.7rem;
+            border-radius: 40px;
+            letter-spacing: 0.3px;
+        }
+
+        .subhead {
+            color: #a0a0a0;
+            font-size: 0.95rem;
+            margin-bottom: 1.8rem;
+            border-left: 3px solid #FFD700;
+            padding-left: 0.9rem;
+        }
+
+        label {
+            display: block;
+            color: #cfcfcf;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.3px;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: #1e1e1e;
+            border: 1px solid #2e2e2e;
+            border-radius: 1.2rem;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: #FFD700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.12);
+        }
+
+        input::placeholder {
+            color: #666;
+            font-weight: 300;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 1.2rem;
+            padding: 0.9rem;
+            background: #FF0040;
+            border: none;
+            border-radius: 2rem;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 0 20px rgba(255, 0, 64, 0.25);
+            letter-spacing: 0.3px;
+        }
+
+        .btn:hover {
+            background: #e6003a;
+            box-shadow: 0 0 30px rgba(255, 0, 64, 0.35);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(0.6);
+        }
+
+        #statusMessage {
+            margin-top: 1.2rem;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 500;
+            min-height: 2.2rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: 2rem;
+            transition: background 0.2s;
+        }
+
+        .trust {
+            margin-top: 1.8rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.8rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #555;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-top: 1px solid #222;
+            padding-top: 1.4rem;
+        }
+
+        .trust span {
+            color: #00FF66;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 1.6rem 1.2rem;
+            }
+            .logo {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">
+        📱 Phantøm <span>Phøne</span>
+    </div>
+    <div class="subhead">
+        Burner numbers · Real SMS · No signup
+    </div>
+
+    <label for="phoneNumber">Enter your phone number</label>
+    <input
+        type="tel"
+        id="phoneNumber"
+        placeholder="+1 555 123 4567"
+        autocomplete="tel"
+    />
+
+    <button class="btn" id="getCodeBtn">🔥 Get Verification Code</button>
+    <div id="statusMessage"> </div>
+
+    <div class="">
+        <span>🔒 No logs</span>
+        <span>⚡ No BS</span>
+        <span>🕶️ Private</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ── CONFIGURATION ──
+        // ⚠️ REPLACE THIS WITH YOUR CURRENT CLOUDFLARE TUNNEL URL
+        const API_URL = 'https://fiscal-dust-odds-public.trycloudflare.com/send';
+        const API_KEY = '6HgRZxo0f49SsPeWEMMR';
+        const COOLDOWN_SECONDS = 10;
+
+        const phoneInput = document.getElementById('phoneNumber');
+        const btn = document.getElementById('getCodeBtn');
+        const statusDiv = document.getElementById('statusMessage');
+
+        let cooldownTimer = null;
+        let isCooldown = false;
+
+        function setStatus(text, color = '#FFD700') {
+            statusDiv.textContent = text;
+            statusDiv.style.color = color;
+        }
+
+        function setCooldown(seconds) {
+            if (cooldownTimer) {
+                clearInterval(cooldownTimer);
+                cooldownTimer = null;
+            }
+            isCooldown = true;
+            btn.disabled = true;
+            let remaining = seconds;
+            const updateButton = () => {
+                btn.textContent = `⏳ Wait ${remaining}s`;
+                if (remaining <= 0) {
+                    clearInterval(cooldownTimer);
+                    cooldownTimer = null;
+                    btn.disabled = false;
+                    btn.textContent = '🔥 Get Verification Code';
+                    isCooldown = false;
+                }
+                remaining--;
+            };
+            updateButton();
+            cooldownTimer = setInterval(updateButton, 1000);
+        }
+
+        function handleGetCode() {
+            if (isCooldown) return;
+
+            const phone = phoneInput.value.trim();
+            if (!phone) {
+                setStatus('⚠️ Please enter your phone number.', '#FF0040');
+                return;
+            }
+            if (!phone.startsWith('+')) {
+                setStatus('ℹ️ Use international format, e.g. +1 555 123 4567', '#FFD700');
+            }
+
+            const code = String(Math.floor(100000 + Math.random() * 900000));
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Sending…';
+            setStatus('⏳ Sending your code…', '#FFD700');
+
+            fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    phone: phone,
+                    message: `Your Phantøm Phøne verification code is: ${code}`
+                })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(err => { throw new Error(err.error || `HTTP ${res.status}`); });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.status === 'sent') {
+                    setStatus(`✅ Sent! Check ${phone} for: ${code}`, '#00FF66');
+                    console.log(`📨 Code for ${phone}: ${code}`);
+                } else {
+                    setStatus('❌ ' + (data.error || 'Unknown error.'), '#FF0040');
+                }
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                setStatus('❌ Error: ' + err.message, '#FF0040');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = '🔥 Get Verification Code';
+                setCooldown(COOLDOWN_SECONDS);
+            });
+        }
+
+        btn.addEventListener('click', handleGetCode);
+        phoneInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleGetCode();
+            }
+        });
+
+        setStatus('Enter your number and click the button.', '#888');
+    })();
+</script>
+</body>
+</html>
