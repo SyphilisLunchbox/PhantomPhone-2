@@ -1,2 +1,2 @@
 # PhantomPhone-2
-Burner numbers for verification codes
+Burner numbers for verification codes and privacy.
